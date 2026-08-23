@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../widgets/custom_text.dart';
+import 'cart_screen.dart';
 import 'product_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -49,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     final title = _selectedIndex == 1
-        ? 'Chat'
+        ? 'Cart'
         : _selectedIndex == 2
             ? 'Profile'
             : 'Home';
@@ -68,7 +69,6 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          elevation: 2,
           title: _buildAppBarTitle(),
           actions: [
             IconButton(
@@ -87,13 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           children: [
             const ProductScreen(),
-            Center(
-              child: CustomText(
-                text: 'Chat Screen',
-                fontSize: 18.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            const CartScreen(),
             Center(
               child: CustomText(
                 text: 'Profile Screen',
@@ -114,8 +108,8 @@ class _HomeScreenState extends State<HomeScreen> {
               label: 'Shop',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.chat),
-              label: 'Chat',
+              icon: Icon(Icons.shopping_cart),
+              label: 'Cart',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person),
@@ -123,6 +117,22 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+        // ENHANCEMENT 2: Make chat bottom navigation as FAB, hidden on cart screen
+        floatingActionButton: _selectedIndex == 1
+            ? null
+            : FloatingActionButton.extended(
+                elevation: 4,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Chat screen (FAB)')),
+                  );
+                },
+                icon: const Icon(Icons.chat_bubble_outline),
+                label: const Text('Chat', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
       ),
     );
   }

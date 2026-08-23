@@ -44,7 +44,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             child: Column(
               children: [
-                
+
                 // ENHANCEMENT 3: Dark / Light Mode Toggle Switch
                 // Renders a SwitchListTile to toggle between Dark and Light mode.
 
@@ -79,5 +79,3 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 }
-
-

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 import '../constants.dart';
-import '../models/product_model.dart';
+import '../models/product.dart';
 
 /// Service responsible for fetching product data from remote API endpoint.
 class ProductService {
@@ -42,6 +42,38 @@ class ProductService {
 
       if (e is HttpException) rethrow;
       throw Exception('Failed to fetch products: $e');
+    }
+  }
+
+  /// Fetches a single product by ID from the remote server.
+  Future<Product> getProductById(int id) async {
+    final url = Uri.parse('$host/products/$id');
+
+    try {
+      final response = await _client.get(url);
+
+      if (response.statusCode == 200) {
+        return Product.fromJson(jsonDecode(response.body));
+      } else {
+        throw HttpException(
+          'Failed to load product. Server responded with status code ${response.statusCode}',
+          uri: url,
+        );
+      }
+    } catch (e) {
+      // If local server is not running (Connection Refused), fallback to public dummyjson API
+      if (host.contains('10.0.2.2') || host.contains('localhost')) {
+        try {
+          final fallbackUrl = Uri.parse('https://dummyjson.com/products/$id');
+          final response = await _client.get(fallbackUrl);
+          if (response.statusCode == 200) {
+            return Product.fromJson(jsonDecode(response.body));
+          }
+        } catch (_) {}
+      }
+
+      if (e is HttpException) rethrow;
+      throw Exception('Failed to fetch product: $e');
     }
   }
 

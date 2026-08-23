@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../models/product_model.dart';
+import '../models/product.dart';
 import '../widgets/custom_text.dart';
 
 // ENHANCEMENT 2: Dedicated Product/Article Details Screen
@@ -33,25 +33,37 @@ class ProductDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Large Product Image Display
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16.r),
-              child: AspectRatio(
-                aspectRatio: 1.2,
-                child: Container(
-                  color: Colors.grey.shade100,
-                  child: Image.network(
-                    product.thumbnail,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Icon(
-                      Icons.image_not_supported,
-                      size: 64.sp,
-                      color: Colors.grey,
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  )
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24.r),
+                child: AspectRatio(
+                  aspectRatio: 1.0,
+                  child: Container(
+                    color: Colors.white,
+                    child: Image.network(
+                      product.thumbnail,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Icon(
+                        Icons.image_not_supported,
+                        size: 64.sp,
+                        color: Colors.grey,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 24.h),
 
             // Title and Price Display Section
             Row(
@@ -61,42 +73,69 @@ class ProductDetailScreen extends StatelessWidget {
                 Expanded(
                   child: CustomText(
                     text: product.title,
-                    fontSize: 22.sp,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 26.sp,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
-                SizedBox(width: 8.w),
-                CustomText(
-                  text: '\$${product.price.toStringAsFixed(2)}',
-                  fontSize: 22.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green.shade700,
+                SizedBox(width: 16.w),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: BorderRadius.circular(30.r),
+                  ),
+                  child: CustomText(
+                    text: '\$${product.price.toStringAsFixed(2)}',
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ],
             ),
-            SizedBox(height: 8.h),
+            SizedBox(height: 16.h),
 
             // Category & Rating Badges
             Row(
               children: [
-                Chip(
-                  avatar: const Icon(Icons.category, size: 16),
-                  label: CustomText(
-                    text: product.category.toUpperCase(),
-                    fontSize: 11.sp,
-                    fontWeight: FontWeight.w600,
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20.r),
                   ),
-                  padding: EdgeInsets.zero,
+                  child: Row(
+                    children: [
+                      Icon(Icons.category, size: 16.sp, color: Theme.of(context).colorScheme.primary),
+                      SizedBox(width: 4.w),
+                      CustomText(
+                        text: product.category.toUpperCase(),
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ],
+                  ),
                 ),
-                SizedBox(width: 8.w),
-                Chip(
-                  avatar: const Icon(Icons.star, size: 16, color: Colors.amber),
-                  label: CustomText(
-                    text: '${product.rating} / 5.0',
-                    fontSize: 11.sp,
-                    fontWeight: FontWeight.w600,
+                SizedBox(width: 12.w),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20.r),
                   ),
-                  padding: EdgeInsets.zero,
+                  child: Row(
+                    children: [
+                      Icon(Icons.star, size: 16.sp, color: Colors.amber.shade700),
+                      SizedBox(width: 4.w),
+                      CustomText(
+                        text: '${product.rating} / 5.0',
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.amber.shade900,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
