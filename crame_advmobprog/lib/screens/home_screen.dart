@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../widgets/custom_text.dart';
 import 'cart_screen.dart';
 import 'product_screen.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String username;
@@ -88,13 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             const ProductScreen(),
             const CartScreen(),
-            Center(
-              child: CustomText(
-                text: 'Profile Screen',
-                fontSize: 18.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            const ProfileScreen(),
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(

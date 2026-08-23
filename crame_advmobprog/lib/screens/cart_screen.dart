@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../models/cart.dart';
 import '../services/cart_service.dart';
 import '../services/product_service.dart';
+import '../services/user_service.dart';
 import '../widgets/custom_text.dart';
 import 'detail_screen.dart';
 
@@ -20,7 +21,8 @@ class _CartScreenState extends State<CartScreen> {
   final CartService _cartService = CartService();
   final ProductService _productService = ProductService();
 
-  late Future<List<Cart>> _cartFuture;
+  Future<Cart>? _cartFuture;
+  int? _userId;
 
   @override
   void initState() {
@@ -28,16 +30,53 @@ class _CartScreenState extends State<CartScreen> {
     _fetchCart();
   }
 
-  void _fetchCart() {
-    setState(() {
-      _cartFuture = _cartService.getAllCarts();
-    });
+  Future<void> _fetchCart() async {
+    try {
+      final user = await UserService().getUser();
+      if (!mounted) return;
+      setState(() {
+        _userId = user.id;
+        _cartFuture = _cartService.getCartByUserId(_userId!);
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load user: $e')),
+      );
+    }
   }
 
+  // ENHANCEMENT 3
   Future<void> _addToCart() async {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Add to cart clicked!')),
-    );
+    try {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      if (_userId == null) return;
+      
+      final newCart = await _cartService.addToCart(_userId!, [
+        {"id": 144, "quantity": 1} // adding a sample product
+      ]);
+
+      if (!mounted) return;
+      Navigator.pop(context); // close dialog
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Item added to cart! New total items: ${newCart.totalProducts}')),
+      );
+
+      // Refresh the cart UI
+      _fetchCart();
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to add item: $e')),
+      );
+    }
   }
 
   Future<void> _navigateToDetail(int productId) async {
@@ -71,7 +110,9 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder<List<Cart>>(
+      body: _cartFuture == null 
+        ? const Center(child: CircularProgressIndicator())
+        : FutureBuilder<Cart>(
         future: _cartFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -80,13 +121,13 @@ class _CartScreenState extends State<CartScreen> {
             return Center(
               child: CustomText(text: 'Error: ${snapshot.error}', fontSize: 16.sp),
             );
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          } else if (!snapshot.hasData || snapshot.data!.products.isEmpty) {
             return Center(
               child: CustomText(text: 'Your cart is empty', fontSize: 18.sp),
             );
           }
 
-          final cart = snapshot.data!.first;
+          final cart = snapshot.data!;
 
           return Container(
             color: const Color(0xFFF7F7F9),
