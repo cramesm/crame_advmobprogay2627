@@ -45,3 +45,9 @@ app.*.map.json
 /android/app/release
 
 crame_advmobprog/build/
+
+# Firebase & Secrets
+**/firebase_options.dart
+!**/firebase_options.example.dart
+**/google-services.json
+**/firebase.json

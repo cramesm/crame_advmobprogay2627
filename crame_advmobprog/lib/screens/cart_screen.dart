@@ -35,7 +35,7 @@ class _CartScreenState extends State<CartScreen> {
       final user = await UserService().getUser();
       if (!mounted) return;
       setState(() {
-        _userId = user.id;
+        _userId = user.id > 0 ? user.id : 1;
         _cartFuture = _cartService.getCartByUserId(_userId!);
       });
     } catch (e) {
